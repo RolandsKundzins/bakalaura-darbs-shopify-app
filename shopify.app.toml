@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "199da1c13af6b18f12b15556b535319b"
-application_url = "https://consideration-township-act-charleston.trycloudflare.com"
+application_url = "https://bookstore-subscriptions-knights-wa.trycloudflare.com"
 embedded = true
 name = "kursa-darba-app"
 handle = "kursa-darba-app"
@@ -23,9 +23,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://consideration-township-act-charleston.trycloudflare.com/auth/callback",
-  "https://consideration-township-act-charleston.trycloudflare.com/auth/shopify/callback",
-  "https://consideration-township-act-charleston.trycloudflare.com/api/auth/callback"
+  "https://bookstore-subscriptions-knights-wa.trycloudflare.com/auth/callback",
+  "https://bookstore-subscriptions-knights-wa.trycloudflare.com/auth/shopify/callback",
+  "https://bookstore-subscriptions-knights-wa.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
