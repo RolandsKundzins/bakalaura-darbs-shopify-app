@@ -1,59 +1,69 @@
-import {
-  reactExtension,
-  Banner,
-  BlockStack,
-  Checkbox,
-  Text,
-  useApi,
-  useApplyAttributeChange,
-  useInstructions,
-  useTranslate,
-} from "@shopify/ui-extensions-react/checkout";
+import { reactExtension, BlockStack, Text, Select, Spinner  } from "@shopify/ui-extensions-react/checkout";
+import { useState } from "react";
 
-// 1. Choose an extension target
-export default reactExtension("purchase.checkout.block.render", () => (
+// Saraksts ar pakomātu atrašanās vietām
+const parcelMachines = [
+  { value: "machine_1", label: "Parcel Machine 1 - Main Street 123" },
+  { value: "machine_2", label: "Parcel Machine 2 - Elm Street 456" },
+  { value: "machine_3", label: "Parcel Machine 3 - Oak Avenue 789" },
+];
+
+// Lokācija, kurā novietot paplašinājumu - šajā gadījuma tas ir "pec-apmaksas lapā"
+export default reactExtension("purchase.thank-you.block.render", () => (
   <Extension />
 ));
 
 function Extension() {
-  const translate = useTranslate();
-  const { extension } = useApi();
-  const instructions = useInstructions();
-  const applyAttributeChange = useApplyAttributeChange();
+  const [selectedMachine, setSelectedMachine] = useState(null);
+  const [loading, setLoading] = useState(false); // State to track loading status
 
 
-  // 2. Check instructions for feature availability, see https://shopify.dev/docs/api/checkout-ui-extensions/apis/cart-instructions for details
-  if (!instructions.attributes.canUpdateAttributes) {
-    // For checkouts such as draft order invoices, cart attributes may not be allowed
-    // Consider rendering a fallback UI or nothing at all, if the feature is unavailable
-    return (
-      <Banner title="pakomatu-izvelne-1" status="warning">
-        {translate("attributeChangesAreNotSupported")}
-      </Banner>
-    );
-  }
+  // Apstrādā izvēlētā pakomāta izmaiņas
+  const handleSelectionChange = async (value) => {
+    setSelectedMachine(value);
+    setLoading(true); // gaida atbildi no servera
 
-  // 3. Render a UI
+    console.log("Selected Parcel Machine:", value);
+
+    try {
+      // Nosūta POST pieprasījumu uz failu "/app/routes/api.pacomat.jsx"
+      await fetch(`https://volvo-hourly-indiana-por.trycloudflare.com/api/packomat`, { //Shopify neatļauj vides mainīgos (angliski: environment variables) priekš Checkout UI Extensions
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ selectedPackomat: value }), // nosūta pakomāta vērtību
+      });
+    } catch (error) {
+      console.error("Error sending packomat data:", error);
+    } finally {
+      setLoading(false); // atbilde no servera saņemta
+    }
+  };
+
   return (
-    <BlockStack border={"dotted"} padding={"tight"}>
-      <Banner title="pakomatu-izvelne-1">
-        {translate("welcome", {
-          target: <Text emphasis="italic">{extension.target}</Text>,
-        })}
-      </Banner>
-      <Checkbox onChange={onCheckboxChange}>
-        {translate("iWouldLikeAFreeGiftWithMyOrder")}
-      </Checkbox>
+    <BlockStack
+      border="base" // robeža
+      borderWidth="medium" // robežas biezums
+      cornerRadius="base" // robežas malu radiuss
+      padding="tight" // iekšējo elementu atkāpes no robežas malām
+    >
+      <Text>Select a parcel machine for your order:</Text>
+      <Select
+        label="Parcel Machines"
+        options={parcelMachines}
+        value={selectedMachine}
+        onChange={handleSelectionChange}
+      />
+      {loading ? (
+        <Spinner />
+      ) : (
+        selectedMachine && (
+          <Text>
+            Thank you! We will start working right away
+          </Text>
+        )
+      )}
     </BlockStack>
   );
-
-  async function onCheckboxChange(isChecked) {
-    // 4. Call the API to modify checkout
-    const result = await applyAttributeChange({
-      key: "requestedFreeGift",
-      type: "updateAttribute",
-      value: isChecked ? "yes" : "no",
-    });
-    console.log("applyAttributeChange result", result);
-  }
 }
