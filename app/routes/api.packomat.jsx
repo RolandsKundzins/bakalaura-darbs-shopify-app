@@ -5,11 +5,10 @@ import { json } from "@remix-run/node";
 
 export const action = async ({ request }) => {
   try {
-    const data = await request.json();
-    const selectedPackomat = data.selectedPackomat;
+    const {selected_packomat, order_id} = await request.json();
 
     // You can process the selected packomat here, for demonstration we'll log it
-    console.log("Received Packomat:", selectedPackomat);
+    console.log(`Received Packomat '${selected_packomat}' for order id '${order_id}'`);
 
     return json({ message: "Packomat received successfully!" });
   } catch (error) {

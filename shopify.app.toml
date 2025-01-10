@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "199da1c13af6b18f12b15556b535319b"
-application_url = "https://volvo-hourly-indiana-por.trycloudflare.com"
+application_url = "https://finds-briefs-tap-focused.trycloudflare.com"
 embedded = true
 name = "kursa-darba-app"
 handle = "kursa-darba-app"
@@ -23,9 +23,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://volvo-hourly-indiana-por.trycloudflare.com/auth/callback",
-  "https://volvo-hourly-indiana-por.trycloudflare.com/auth/shopify/callback",
-  "https://volvo-hourly-indiana-por.trycloudflare.com/api/auth/callback"
+  "https://finds-briefs-tap-focused.trycloudflare.com/auth/callback",
+  "https://finds-briefs-tap-focused.trycloudflare.com/auth/shopify/callback",
+  "https://finds-briefs-tap-focused.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

@@ -1,4 +1,4 @@
-import { reactExtension, BlockStack, Text, Select, Spinner  } from "@shopify/ui-extensions-react/checkout";
+import { reactExtension, BlockStack, Text, Select, Spinner, useApi } from "@shopify/ui-extensions-react/checkout";
 import { useState } from "react";
 
 // Saraksts ar pakomātu atrašanās vietām
@@ -15,24 +15,32 @@ export default reactExtension("purchase.thank-you.block.render", () => (
 
 function Extension() {
   const [selectedMachine, setSelectedMachine] = useState(null);
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [loading, setLoading] = useState(false);
 
+  const shopify_data = useApi();
 
   // Apstrādā izvēlētā pakomāta izmaiņas
   const handleSelectionChange = async (value) => {
     setSelectedMachine(value);
     setLoading(true); // gaida atbildi no servera
 
+
+    const order_id = shopify_data.orderConfirmation.current.order.id // pasūtījuma identifikators
+    console.log(`Order id: ${order_id}`);
     console.log("Selected Parcel Machine:", value);
 
     try {
       // Nosūta POST pieprasījumu uz failu "/app/routes/api.pacomat.jsx"
-      await fetch(`https://volvo-hourly-indiana-por.trycloudflare.com/api/packomat`, { //Shopify neatļauj vides mainīgos (angliski: environment variables) priekš Checkout UI Extensions
+      const SERVER_URL = "https://finds-briefs-tap-focused.trycloudflare.com"
+      await fetch(`${SERVER_URL}/api/packomat`, { //Shopify neatļauj vides mainīgos (angliski: environment variables) priekš Checkout UI Extensions
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ selectedPackomat: value }), // nosūta pakomāta vērtību
+        body: JSON.stringify({ 
+          selected_packomat: value,
+          order_id: order_id,
+        }), // nosūta pakomāta un pasūtījuma identifikatora vērtību
       });
     } catch (error) {
       console.error("Error sending packomat data:", error);
@@ -56,7 +64,7 @@ function Extension() {
         onChange={handleSelectionChange}
       />
       {loading ? (
-        <Spinner />
+        <Spinner /> // lādēšanās indikators
       ) : (
         selectedMachine && (
           <Text>
